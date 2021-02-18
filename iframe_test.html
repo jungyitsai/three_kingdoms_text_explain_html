@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        iframe {
+            display: inline-block;
+            width: 40vw;
+            height: 100vh;
+        }
+
+        div {
+            margin: 5px;
+        }
+
+        #search_result {            
+            height: 250px;
+            overflow-y: auto;
+            overflow-x: hidden;            
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <h1>三國志-文言白話對讀</h1>
+        <div>
+            <label for="keyword">關鍵字</label>
+            <input id="keyword" v-model="keyword">
+            <button id="btn" @click="query">輸入</button>
+        </div>
+
+        <div id="search_result">
+            <h2>包含關鍵字的文言文書籍</h2>
+            <li v-for="item in search_result" :key="item"><a href="#" @click.prevent="load(item)">{{ item }}</a></li>
+        </div>
+
+        <iframe :src="origin_src"></iframe>
+        <iframe :src="explain_src"></iframe>
+    </div>
+
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {                
+                keyword: '',
+                origin_src: '',
+                explain_src: '',
+                search_result: ['吳書一', '吳書二', '吳書三'],
+            },
+            methods: {
+                query() {
+                    if (this.keyword) {
+                        console.log(this.keyword);
+                        // query origin chapter api
+                        const api = `http://127.0.0.1:5000/query?keyword=${this.keyword}`;
+                        axios.get(api)
+                            .then(function (response) {
+                                // handle success
+                                console.log(response.data);
+                            })
+                            .catch(function (error) {
+                                // handle error
+                                console.log(error);
+                            });
+                    }
+                },
+                load(bookname) {
+                    console.log(bookname);
+                    // load origin & explain api
+                    const api = `http://127.0.0.1:5000/load?bookname=${bookname}`;
+                    axios.get(api)
+                        .then(function (response) {
+                            // handle success
+                            console.log(response.data);
+                            this.origin_src = './origin_three_kingdoms_folder/吳書一.html';
+                            this.explain_src = './origin_three_kingdoms_folder/蜀書一.html';
+                        })
+                        .catch(function (error) {
+                            // handle error
+                            console.log(error);
+                        });
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
