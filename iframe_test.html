@@ -23,10 +23,10 @@
             margin: 5px;
         }
 
-        #search_result {            
+        #search_result {
             height: 250px;
             overflow-y: auto;
-            overflow-x: hidden;            
+            overflow-x: hidden;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
@@ -43,11 +43,11 @@
         </div>
 
         <div id="search_result">
-            <h2>包含關鍵字的文言文書籍</h2>
+            <h2>包含關鍵字的文言文書籍</h2>            
             <li v-for="item in search_result" :key="item"><a href="#" @click.prevent="load(item)">{{ item }}</a></li>
         </div>
 
-        <iframe :src="origin_src"></iframe>
+        <iframe ref="origin_iframe" :src="origin_src"></iframe>
         <iframe :src="explain_src"></iframe>
     </div>
 
@@ -55,11 +55,15 @@
     <script>
         new Vue({
             el: '#app',
-            data: {                
+            data: {
                 keyword: '',
                 origin_src: '',
                 explain_src: '',
-                search_result: ['吳書一', '吳書二', '吳書三'],
+                search_result: [
+                    "吳書十三",
+                    "吳書十",
+                    "吳書三"
+                ],
             },
             methods: {
                 query() {
@@ -71,6 +75,8 @@
                             .then(function (response) {
                                 // handle success
                                 console.log(response.data);
+                                // this.search_result = []
+                                this.search_result = Object.assign({}, response.data);
                             })
                             .catch(function (error) {
                                 // handle error
@@ -83,13 +89,20 @@
                     // load origin & explain api
                     const api = `http://127.0.0.1:5000/load?bookname=${bookname}`;
                     axios.get(api)
-                        .then(function (response) {
+                        .then(response => {
                             // handle success
                             console.log(response.data);
-                            this.origin_src = './origin_three_kingdoms_folder/吳書一.html';
-                            this.explain_src = './origin_three_kingdoms_folder/蜀書一.html';
+                            const explain_book_name = response.data;
+                            this.origin_src = `http://127.0.0.1:5500/origin_three_kingdoms_folder/${bookname}.html`;
+                            this.explain_src = `http://127.0.0.1:5500/explain_three_kingdoms_folder/${explain_book_name}.html`;
+
+                            console.log(this.origin_src);
+                            console.log(this.explain_src);
+
+                            console.log('---');
+                            console.log(this.$refs)
                         })
-                        .catch(function (error) {
+                        .catch(error => {
                             // handle error
                             console.log(error);
                         });
