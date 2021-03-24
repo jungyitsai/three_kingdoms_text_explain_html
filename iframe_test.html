@@ -43,7 +43,7 @@
         </div>
 
         <div id="search_result">
-            <h2>包含關鍵字的文言文書籍</h2>            
+            <h2>包含關鍵字的文言文書籍</h2>
             <li v-for="item in search_result" :key="item"><a href="#" @click.prevent="load(item)">{{ item }}</a></li>
         </div>
 
@@ -61,7 +61,6 @@
                 explain_src: '',
                 search_result: [
                     "吳書十三",
-                    "吳書十",
                     "吳書三"
                 ],
             },
@@ -72,13 +71,12 @@
                         // query origin chapter api
                         const api = `http://127.0.0.1:5000/query?keyword=${this.keyword}`;
                         axios.get(api)
-                            .then(function (response) {
+                            .then(response => {
                                 // handle success
                                 console.log(response.data);
-                                // this.search_result = []
-                                this.search_result = Object.assign({}, response.data);
+                                this.search_result = response.data;
                             })
-                            .catch(function (error) {
+                            .catch(error => {
                                 // handle error
                                 console.log(error);
                             });
@@ -99,14 +97,12 @@
                             console.log(this.origin_src);
                             console.log(this.explain_src);
 
-                            console.log('---');
-                            console.log(this.$refs)
                         })
                         .catch(error => {
                             // handle error
                             console.log(error);
                         });
-                }
+                },
             }
         })
     </script>
